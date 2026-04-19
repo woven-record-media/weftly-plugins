@@ -79,4 +79,4 @@ Canonical prices are served by the Weftly MCP server at `tools/list` time — th
 
 ## License
 
-TBD — this repo will have a license file added before general availability.
+[MIT](./LICENSE) © Woven Record Media

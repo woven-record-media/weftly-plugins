@@ -1,0 +1,17 @@
+{
+  "name": "weftly",
+  "owner": {
+    "name": "Woven Record Media"
+  },
+  "metadata": {
+    "description": "Official Claude Code plugins for Weftly — agent-native transcription, summarization, and more via MPP payments"
+  },
+  "plugins": [
+    {
+      "name": "weftly-setup",
+      "source": "./plugins/weftly-setup",
+      "description": "One-shot setup for the Weftly MCP server and mppx wallet payments in Claude Code",
+      "version": "0.1.0"
+    }
+  ]
+}

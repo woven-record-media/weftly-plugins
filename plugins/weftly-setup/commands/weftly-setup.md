@@ -1,5 +1,5 @@
 ---
-description: One-shot setup for Weftly MCP + mppx wallet payments. Requires --wallet <name>. Pass --dev for testnet.
+description: One-shot setup for Weftly MCP + mppx wallet payments. Requires --wallet <name>.
 ---
 
 Set up this Claude Code project to call the Weftly MCP server with automatic MPP payments from an mppx wallet.
@@ -14,8 +14,6 @@ Flags (parsed from user input): `$ARGUMENTS`
   > Use the name of the mppx wallet you want Claude to pay from (`npx mppx account list` shows all wallets on this machine).
 
   Do not guess, do not default. The wallet holds real funds.
-
-- **`--dev`** — use the dev endpoint `https://api.dev.weftly.ai/mcp` (testnet). Otherwise production `https://api.weftly.ai/mcp`.
 
 Throughout the steps below, substitute `<WALLET>` with the value passed to `--wallet`.
 
@@ -41,7 +39,7 @@ Run `npx mppx account list`.
   > - `npx mppx account create` (new random key), entering `<WALLET>` at the name prompt
   > - Import an existing key by setting `MPPX_PRIVATE_KEY` env var, or restoring from a backup
   >
-  > Then fund the wallet with USDC on Tempo mainnet (or pathUSD on Tempo testnet if using `--dev`) and rerun `/weftly-setup --wallet <WALLET>`.
+  > Then fund the wallet with USDC on Tempo mainnet and rerun `/weftly-setup --wallet <WALLET>`.
 
   Do not create the wallet automatically.
 
@@ -63,9 +61,7 @@ This copies skill files (notably `mppx-sign.md`) into `~/.claude/skills/`, teach
 
 ## 6. Ensure the Weftly MCP server is in `.mcp.json`
 
-Pick the URL:
-- If `$ARGUMENTS` contains `--dev`: `https://api.dev.weftly.ai/mcp`
-- Else: `https://api.weftly.ai/mcp`
+The Weftly MCP server URL is `https://api.weftly.ai/mcp`.
 
 Check for `.mcp.json` in the current working directory.
 
@@ -75,13 +71,13 @@ Check for `.mcp.json` in the current working directory.
     "mcpServers": {
       "weftly": {
         "type": "http",
-        "url": "<chosen URL>"
+        "url": "https://api.weftly.ai/mcp"
       }
     }
   }
   ```
-- If it exists and already has a `weftly` entry whose `url` matches the chosen URL: leave it alone.
-- If it exists and has a `weftly` entry with a **different** URL: surface the mismatch and ask the user whether to overwrite (prod ↔ dev switch is intentional sometimes).
+- If it exists and already has a `weftly` entry whose `url` matches `https://api.weftly.ai/mcp`: leave it alone.
+- If it exists and has a `weftly` entry with a **different** URL: surface the mismatch and ask the user whether to overwrite.
 - If it exists without a `weftly` entry: add the entry, preserving existing servers.
 
 ## 7. Show the wallet balance

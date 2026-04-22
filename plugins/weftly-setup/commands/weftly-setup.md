@@ -8,8 +8,8 @@ Flags (parsed from user input): `$ARGUMENTS`
 
 - **`--wallet <name>` / `-w <name>` (required)** — the mppx wallet name to use for payments. If not present, stop immediately and tell the user:
 
-  > `/weftly-setup` requires a wallet name. Run:
-  > `/weftly-setup --wallet <name>`
+  > `/weftly-setup:weftly-setup` requires a wallet name. Run:
+  > `/weftly-setup:weftly-setup --wallet <name>`
   >
   > Use the name of the mppx wallet you want Claude to pay from (`npx mppx account list` shows all wallets on this machine).
 
@@ -25,7 +25,7 @@ Run the steps below in order. Stop and surface the problem to the user on any fa
 
 Run `command -v npx`.
 
-- If not found: tell the user to install Node.js (which ships with npx), then rerun `/weftly-setup --wallet <name>`. Stop here.
+- If not found: tell the user to install Node.js (which ships with npx), then rerun `/weftly-setup:weftly-setup --wallet <name>`. Stop here.
 - If found: run `npx --yes mppx --version` to both confirm mppx is reachable and warm the npx cache. Report the version.
 
 ## 2. Verify the `<WALLET>` wallet exists
@@ -39,7 +39,7 @@ Run `npx mppx account list`.
   > - `npx mppx account create` (new random key), entering `<WALLET>` at the name prompt
   > - Import an existing key by setting `MPPX_PRIVATE_KEY` env var, or restoring from a backup
   >
-  > Then fund the wallet with USDC on Tempo mainnet and rerun `/weftly-setup --wallet <WALLET>`.
+  > Then fund the wallet with USDC on Tempo mainnet and rerun `/weftly-setup:weftly-setup --wallet <WALLET>`.
 
   Do not create the wallet automatically.
 

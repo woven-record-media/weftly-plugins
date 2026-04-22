@@ -16,26 +16,34 @@ In Claude Code:
 
 One-shot setup for the Weftly MCP server and mppx wallet payments. Registers the `mppx` stdio MCP server so Claude can sign payment challenges, syncs the mppx skills, and adds the Weftly HTTP MCP server to your project's `.mcp.json`.
 
-**Install:**
+**Prerequisites:**
+
+- **Node.js** (ships with `npx`)
+- An **mppx wallet** funded with USDC on Tempo mainnet.
+
+**1. Create and fund an mppx wallet**
+
+```
+npx mppx account create
+```
+
+Choose a name when prompted (you'll pass it to `/weftly-setup:weftly-setup` below). Then fund the wallet with USDC on Tempo mainnet — see [mppx docs](https://mpp.dev/sdk/typescript) for funding, or bridge from Base using [this guide](https://github.com/woven-record-media/weftly-monorepo/blob/main/docs/bridge-usdc-base-to-tempo.md).
+
+**2. Install the plugin:**
 
 ```
 /plugin install weftly-setup@weftly
 ```
 
-**Usage:**
+**3. Run setup with your wallet name:**
 
 ```
-/weftly-setup --wallet <your-wallet-name>
+/weftly-setup:weftly-setup --wallet <your-wallet-name>
 ```
 
 The `--wallet` flag is required — no silent defaults, because mppx wallets hold real funds. The name must match a wallet in your mppx keychain (see `npx mppx account list`).
 
-#### Prerequisites
-
-- **Node.js** (ships with `npx`)
-- An **mppx wallet** funded with USDC on Tempo mainnet. Create one with `npx mppx account create`; see [mppx docs](https://mpp.dev/sdk/typescript) for funding.
-
-#### What `/weftly-setup` does
+#### What `/weftly-setup:weftly-setup` does
 
 1. Checks that `npx` is available and warms the mppx cache.
 2. Verifies the named wallet exists in the mppx keychain.

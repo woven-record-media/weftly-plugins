@@ -25,8 +25,7 @@ One-shot setup for the Weftly MCP server and mppx wallet payments. Registers the
 **Usage:**
 
 ```
-/weftly-setup --wallet <your-wallet-name>        # production (mainnet USDC)
-/weftly-setup --wallet <your-wallet-name> --dev  # dev endpoint (testnet pathUSD)
+/weftly-setup --wallet <your-wallet-name>
 ```
 
 The `--wallet` flag is required — no silent defaults, because mppx wallets hold real funds. The name must match a wallet in your mppx keychain (see `npx mppx account list`).
@@ -34,7 +33,7 @@ The `--wallet` flag is required — no silent defaults, because mppx wallets hol
 #### Prerequisites
 
 - **Node.js** (ships with `npx`)
-- An **mppx wallet** funded with USDC on Tempo mainnet (or pathUSD on Tempo testnet when using `--dev`). Create one with `npx mppx account create`; see [mppx docs](https://mpp.dev/sdk/typescript) for funding.
+- An **mppx wallet** funded with USDC on Tempo mainnet. Create one with `npx mppx account create`; see [mppx docs](https://mpp.dev/sdk/typescript) for funding.
 
 #### What `/weftly-setup` does
 
@@ -43,7 +42,7 @@ The `--wallet` flag is required — no silent defaults, because mppx wallets hol
 3. Sets it as the default mppx account.
 4. Registers `mppx --mcp` as a local stdio MCP server in Claude Code (`npx mppx mcp add --agent claude-code`).
 5. Syncs mppx's bundled skills into `~/.claude/skills/` so Claude knows to call `mppx:sign` on `payment_required` errors (`npx mppx skills add`).
-6. Adds a `weftly` entry to the project's `.mcp.json` pointing at the prod or dev endpoint.
+6. Adds a `weftly` entry to the project's `.mcp.json` pointing at the Weftly MCP server.
 7. Prints your wallet balance.
 8. Prompts you to restart Claude Code.
 

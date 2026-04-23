@@ -17,7 +17,7 @@ Flags (parsed from user input): `$ARGUMENTS`
 
 Throughout the steps below, substitute `<WALLET>` with the value passed to `--wallet`.
 
-**Runner note**: all `mppx` commands below are invoked via `npx mppx ...`. No global install is required. `mppx mcp add` will register the MCP server spawn command as `npx mppx --mcp`, so Claude Code will pull mppx on-demand on every launch (cached by npx after first run).
+**Runner note**: all `mppx` commands below are invoked via `npx mppx ...`. No global install is required. The MCP proxy installed in step 4 also shells out via `npx --yes mppx` for each signing call, so mppx stays warm via npx's cache.
 
 Run the steps below in order. Stop and surface the problem to the user on any failure — do **not** silently create wallets or paper over missing prerequisites.
 
@@ -47,11 +47,31 @@ Run `npx mppx account list`.
 
 Run `npx mppx account default --account <WALLET>`. Surface any error.
 
-## 4. Register mppx as an MCP server in Claude Code
+## 4. Install the mppx MCP proxy and register it with Claude Code
 
-Run `npx mppx mcp add --agent claude-code`.
+Claude Code needs a stdio MCP server for mppx signing. mppx 0.6.3's own `--mcp` mode has two upstream bugs that break unattended payment flows:
 
-This writes a `mppx` entry into Claude Code's MCP config with the spawn command `npx mppx --mcp` (stdio). On Claude Code launch, that spawns the mppx MCP server in-process, exposing `mppx:sign`, `mppx:account-*`, etc. directly to Claude.
+1. `mppx/dist/bin.js` calls `process.exit(0)` immediately after `cli.serve()` resolves, killing the stdio transport before any request can be processed.
+2. CLI command handlers only `console.log(...)` their output instead of returning data through the runtime, so every MCP tool returns `null` and corrupts the JSON-RPC stream with stray stdout — causing the client to disconnect mid-call.
+
+This plugin ships a thin proxy (`scripts/mppx-mcp-proxy.mjs`) that bypasses both bugs: it implements MCP stdio itself and shells out to `npx --yes mppx sign ...` per call, parsing stdout into a structured `{authorization: "Payment ..."}` result. It exposes only the `sign` tool — that's all Weftly's payment flow needs.
+
+Locate the bundled proxy, copy it to a stable path, and register it with Claude Code:
+
+```bash
+PROXY_SRC="$(find "$HOME/.claude/plugins" -type f -path '*weftly-setup/scripts/mppx-mcp-proxy.mjs' -print -quit)"
+if [ -z "$PROXY_SRC" ]; then
+  echo "Could not locate bundled mppx-mcp-proxy.mjs in the installed plugin." >&2
+  exit 1
+fi
+install -D -m 0755 "$PROXY_SRC" "$HOME/.claude/mppx-mcp-proxy.mjs"
+
+# Re-register (idempotent): remove any prior mppx entry, then add the proxy.
+claude mcp remove mppx -s user 2>/dev/null || true
+claude mcp add -s user mppx -- node "$HOME/.claude/mppx-mcp-proxy.mjs"
+```
+
+Verify with `claude mcp list | grep mppx` — should show `mppx` pointing at `node $HOME/.claude/mppx-mcp-proxy.mjs`.
 
 ## 5. Sync mppx's bundled skills
 
@@ -95,5 +115,6 @@ Tell the user, in plain text:
 ## Notes
 
 - Never skip step 2's manual-creation requirement, even if it would simplify onboarding. mppx wallets on mainnet hold real USDC; auto-creating a differently-named wallet would silently point Claude at an empty one and any new key would also need funding before paid calls can succeed.
-- npx caches packages after first fetch; subsequent Claude Code launches spawn mppx quickly. If you want to pin a specific version, you can rerun step 4 with `--command "npx mppx@<version> --mcp"`.
-- If `mppx mcp add` reports the server is already registered, treat that as success — it's idempotent.
+- npx caches packages after first fetch; subsequent proxy `sign` calls spawn mppx quickly. To pin a specific mppx version, edit `~/.claude/mppx-mcp-proxy.mjs` and replace the `['--yes', 'mppx', ...]` args with `['--yes', 'mppx@<version>', ...]`.
+- The proxy only exposes `sign` by design — that's the only tool the unattended payment flow needs. For other mppx operations (`account list`, `account fund`, etc.), continue using `npx mppx <subcommand>` directly in a shell.
+- Step 4 is idempotent: rerunning it reinstalls the proxy and re-registers the MCP server. If `claude mcp list` already shows `mppx` pointing at the proxy, step 4 is a no-op in effect.

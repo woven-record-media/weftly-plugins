@@ -48,7 +48,7 @@ The `--wallet` flag is required — no silent defaults, because mppx wallets hol
 1. Checks that `npx` is available and warms the mppx cache.
 2. Verifies the named wallet exists in the mppx keychain.
 3. Sets it as the default mppx account.
-4. Registers `mppx --mcp` as a local stdio MCP server in Claude Code (`npx mppx mcp add --agent claude-code`).
+4. Installs a small local MCP stdio proxy (`~/.claude/mppx-mcp-proxy.mjs`) that shells out to `npx --yes mppx sign` per call, and registers it with Claude Code as the `mppx` MCP server (`claude mcp add -s user mppx -- node ~/.claude/mppx-mcp-proxy.mjs`). The proxy is a workaround for [wevm/mppx#386](https://github.com/wevm/mppx/issues/386) and [#387](https://github.com/wevm/mppx/issues/387), which currently make mppx's own `--mcp` mode unusable from MCP clients.
 5. Syncs mppx's bundled skills into `~/.claude/skills/` so Claude knows to call `mppx:sign` on `payment_required` errors (`npx mppx skills add`).
 6. Adds a `weftly` entry to the project's `.mcp.json` pointing at the Weftly MCP server.
 7. Prints your wallet balance.
@@ -57,7 +57,7 @@ The `--wallet` flag is required — no silent defaults, because mppx wallets hol
 After restart, Claude Code gains:
 
 - `weftly:transcribe`, `weftly:summarize`, `weftly:complete_upload`, `weftly:get_job_status` (and any future Weftly tools) from the remote HTTP MCP server.
-- `mppx:sign`, `mppx:account-*`, etc. from the local stdio MCP server.
+- `mppx:sign` from the local stdio MCP proxy. (Other mppx operations — `account list`, `account fund`, etc. — remain available via `npx mppx <subcommand>` directly in a shell; the proxy intentionally only exposes `sign`, since that's what the unattended payment flow needs.)
 
 When Claude calls a paid Weftly tool, the flow is fully automatic: Weftly returns `payment_required` with a challenge → Claude calls `mppx:sign` (signed against your wallet) → Claude retries the Weftly call with the credential → the tool proceeds.
 

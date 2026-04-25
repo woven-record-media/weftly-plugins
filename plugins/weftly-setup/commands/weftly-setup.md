@@ -79,26 +79,16 @@ Run `npx mppx skills add`.
 
 This copies skill files (notably `mppx-sign.md`) into `~/.claude/skills/`, teaching Claude when and how to call the `mppx:sign` tool in response to `payment_required` errors from any MPP-speaking MCP server.
 
-## 6. Ensure the Weftly MCP server is in `.mcp.json`
+## 6. Register the Weftly MCP server with Claude Code
 
-The Weftly MCP server URL is `https://api.weftly.ai/mcp`.
+Register the Weftly HTTP MCP server at the user scope so it is available in every project (idempotent):
 
-Check for `.mcp.json` in the current working directory.
+```bash
+claude mcp remove weftly -s user 2>/dev/null || true
+claude mcp add -s user --transport http weftly https://api.weftly.ai/mcp
+```
 
-- If it does not exist: create it with:
-  ```json
-  {
-    "mcpServers": {
-      "weftly": {
-        "type": "http",
-        "url": "https://api.weftly.ai/mcp"
-      }
-    }
-  }
-  ```
-- If it exists and already has a `weftly` entry whose `url` matches `https://api.weftly.ai/mcp`: leave it alone.
-- If it exists and has a `weftly` entry with a **different** URL: surface the mismatch and ask the user whether to overwrite.
-- If it exists without a `weftly` entry: add the entry, preserving existing servers.
+Verify with `claude mcp list | grep weftly` — should show `weftly` pointing at `https://api.weftly.ai/mcp`.
 
 ## 7. Show the wallet balance
 

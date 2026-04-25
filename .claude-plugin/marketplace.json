@@ -11,7 +11,13 @@
       "name": "weftly-setup",
       "source": "./plugins/weftly-setup",
       "description": "One-shot setup for the Weftly MCP server and mppx wallet payments in Claude Code",
-      "version": "0.4.1"
+      "version": "0.5.0"
+    },
+    {
+      "name": "weftly-editing",
+      "source": "./plugins/weftly-editing",
+      "description": "Transcribe local audio/video via Weftly and run editing skills (filler removal, intro hook extraction) on the output.",
+      "version": "0.1.0"
     }
   ]
 }

@@ -61,6 +61,28 @@ After restart, Claude Code gains:
 
 When Claude calls a paid Weftly tool, the flow is fully automatic: Weftly returns `payment_required` with a challenge → Claude calls `mppx:sign` (signed against your wallet) → Claude retries the Weftly call with the credential → the tool proceeds.
 
+### `weftly-editing`
+
+Editing skills that orchestrate Weftly transcription and run downstream cleanup on the resulting word-level transcripts. Built on top of `weftly-setup` — install that one first.
+
+**1. Install the plugin** (after `weftly-setup` is installed and you've restarted Claude Code):
+
+```
+/plugin install weftly-editing@weftly
+```
+
+**2. Use the skills.** All editing skills consume Weftly's word-level v2 JSON (`weftly-transcript-v2`) as their canonical input format; SRT is produced as a sibling for tools that need it.
+
+| Skill | What it does |
+|-------|--------------|
+| `/weftly-editing:transcribe <file>` | Pay, upload, poll, and download. Writes `<base>.words.json` and `<base>.srt` next to the input file. |
+| `/weftly-editing:remove-fillers <words.json>` | Remove filler words and false starts from a word-level transcript, using a configurable gap-threshold heuristic. Writes `<base>_cleaned.words.json` and `<base>_cleaned.srt`. |
+| `/weftly-editing:intro-clip` | Extract a 30–60s intro hook from a source video, matched to a target file's encoding for clean concat splicing. Walks through file probing, hook selection (snapped to word boundaries), and ffmpeg extraction. |
+| `/weftly-editing:transcribe-and-remove-fillers <file>` | Bundled: transcribe → remove-fillers in one shot. |
+| `/weftly-editing:transcribe-and-intro-clip <video>` | Bundled: transcribe → intro-clip in one shot. |
+
+**Data retention:** files you upload to Weftly and the transcripts it produces are retained for up to 24 hours and then deleted. Download anything you want to keep — these skills always write the transcripts to disk next to your input file. See [weftly.ai](https://weftly.ai) for the privacy policy and terms of service.
+
 ## How payments work
 
 Weftly speaks the [Machine Payments Protocol (MPP)](https://mpp.dev). Every paid tool call consumes a small amount of USDC from your mppx wallet — $0.50 for audio transcription, $1.00 for video, etc. (see [pricing](https://weftly.ai)). The wallet and signing happen entirely on your machine; Weftly never sees your key.

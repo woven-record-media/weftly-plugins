@@ -8,6 +8,10 @@ If you don't have a transcript yet, run `/weftly-editing:transcribe <file>` firs
 
 Input: a path to a `.words.json` file passed as `$ARGUMENTS` (e.g., `/weftly-editing:remove-fillers ~/Downloads/podcast.words.json`).
 
+## Prerequisites
+
+- **Python 3.8+** (stdlib only — no pip packages, no ffmpeg, no external services).
+
 ## Locating the script
 
 The Python script ships inside this plugin at `plugins/weftly-editing/scripts/remove_fillers.py`. Locate it dynamically rather than hard-coding a path — the plugin install location varies:

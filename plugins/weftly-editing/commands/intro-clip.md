@@ -6,6 +6,23 @@ Extract a 30–60 second intro hook clip from a source video, matched to a targe
 
 If you don't have a transcript yet, run `/weftly-editing:transcribe <video>` first, or use `/weftly-editing:transcribe-and-intro-clip <video>` to chain both in one shot.
 
+## Prerequisites
+
+This skill shells out to system tools — they are **not** bundled with the plugin:
+
+- **Python 3.8+** (stdlib only; no pip packages).
+- **`ffprobe`** — used to inspect codec / encoding properties of source and target files.
+- **`ffmpeg`** — used to extract the clip with matched encoding.
+
+Both `ffprobe` and `ffmpeg` ship together in the standard ffmpeg distribution. If they aren't on `PATH`, install via:
+
+- macOS: `brew install ffmpeg`
+- Debian / Ubuntu: `sudo apt install ffmpeg`
+- Fedora: `sudo dnf install ffmpeg`
+- Windows: `winget install ffmpeg` (or [ffmpeg.org](https://ffmpeg.org/download.html))
+
+Verify with `ffmpeg -version` and `ffprobe -version` before running this skill. If either is missing, the script will fail with a clear "ffmpeg/ffprobe not found" error before any encoding work starts.
+
 ## Locating the script
 
 The Python script ships inside this plugin at `plugins/weftly-editing/scripts/intro_clip.py`. Locate it dynamically rather than hard-coding a path:

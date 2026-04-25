@@ -17,11 +17,29 @@ import argparse
 import json
 import os
 import re
+import shutil
 import subprocess
 import sys
 
 
 TRANSCRIPT_FORMAT = "weftly-transcript-v2"
+
+
+def require_ffmpeg():
+    """Verify ffmpeg and ffprobe are on PATH before doing any real work."""
+    missing = [tool for tool in ("ffmpeg", "ffprobe") if shutil.which(tool) is None]
+    if missing:
+        print(
+            f"Error: required tool(s) not found on PATH: {', '.join(missing)}.\n"
+            "Install ffmpeg (which ships ffprobe alongside it):\n"
+            "  macOS:          brew install ffmpeg\n"
+            "  Debian/Ubuntu:  sudo apt install ffmpeg\n"
+            "  Fedora:         sudo dnf install ffmpeg\n"
+            "  Windows:        winget install ffmpeg\n"
+            "Or download a build from https://ffmpeg.org/download.html",
+            file=sys.stderr,
+        )
+        sys.exit(1)
 
 
 # ---------------------------------------------------------------------------
@@ -706,6 +724,8 @@ def main():
     )
 
     args = parser.parse_args()
+
+    require_ffmpeg()
 
     if args.probe_files:
         cmd_probe_files(args.probe_files)

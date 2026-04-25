@@ -67,15 +67,8 @@ Editing skills that orchestrate Weftly transcription and run downstream cleanup 
 
 **Prerequisites** (in addition to whatever `weftly-setup` already gave you):
 
-- **Python 3.10+** — the editing scripts (`remove_fillers.py`, `intro_clip.py`) are stdlib-only Python. 3.10 is the oldest currently-supported Python and ships by default on Ubuntu 22.04 LTS, Debian 12, current macOS Homebrew, and RHEL/Rocky 9.
+- **Python 3.10+** — `remove_fillers.py` is stdlib-only Python. 3.10 is the oldest currently-supported Python and ships by default on Ubuntu 22.04 LTS, Debian 12, current macOS Homebrew, and RHEL/Rocky 9.
 - **`curl`** — used by `/weftly-editing:transcribe` to PUT files to Weftly's presigned upload URLs. Pre-installed on virtually every macOS / Linux system.
-- **`ffmpeg` and `ffprobe`** — required by `/weftly-editing:intro-clip` (and the `transcribe-and-intro-clip` bundle) for video probing and clip extraction. Install via your platform's package manager:
-  - macOS: `brew install ffmpeg`
-  - Debian / Ubuntu: `sudo apt install ffmpeg`
-  - Fedora: `sudo dnf install ffmpeg`
-  - Windows: `winget install ffmpeg` (or download from [ffmpeg.org](https://ffmpeg.org/download.html))
-
-  `/weftly-editing:transcribe` and `/weftly-editing:remove-fillers` do **not** need ffmpeg — only the video-clipping skills do.
 
 **1. Install the plugin** (after `weftly-setup` is installed and you've restarted Claude Code):
 
@@ -89,9 +82,7 @@ Editing skills that orchestrate Weftly transcription and run downstream cleanup 
 |-------|--------------|
 | `/weftly-editing:transcribe <file>` | Pay, upload, poll, and download. Writes `<base>.words.json` and `<base>.srt` next to the input file. |
 | `/weftly-editing:remove-fillers <words.json>` | Remove filler words and false starts from a word-level transcript, using a configurable gap-threshold heuristic. Writes `<base>_cleaned.words.json` and `<base>_cleaned.srt`. |
-| `/weftly-editing:intro-clip` | Extract a 30–60s intro hook from a source video, matched to a target file's encoding for clean concat splicing. Walks through file probing, hook selection (snapped to word boundaries), and ffmpeg extraction. |
 | `/weftly-editing:transcribe-and-remove-fillers <file>` | Bundled: transcribe → remove-fillers in one shot. |
-| `/weftly-editing:transcribe-and-intro-clip <video>` | Bundled: transcribe → intro-clip in one shot. |
 
 **Data retention:** files you upload to Weftly and the transcripts it produces are retained for up to 24 hours and then deleted. Download anything you want to keep — these skills always write the transcripts to disk next to your input file. See [weftly.ai](https://weftly.ai) for the privacy policy and terms of service.
 

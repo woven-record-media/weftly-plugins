@@ -16,8 +16,8 @@
     {
       "name": "weftly-editing",
       "source": "./plugins/weftly-editing",
-      "description": "Transcribe local audio/video via Weftly and run editing skills (filler removal, intro hook extraction) on the output.",
-      "version": "0.1.0"
+      "description": "Transcribe local audio/video via Weftly and run editing skills (filler removal) on the output.",
+      "version": "0.2.0"
     }
   ]
 }

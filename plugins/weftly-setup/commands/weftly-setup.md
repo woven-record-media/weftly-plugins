@@ -17,7 +17,7 @@ Flags (parsed from user input): `$ARGUMENTS`
 
 Throughout the steps below, substitute `<WALLET>` with the value passed to `--wallet`.
 
-**Runner note**: all `mppx` commands below are invoked via `npx mppx ...`. No global install is required. mppx 0.6.5+ runs its own MCP stdio server via `--mcp`; step 4 registers it directly with Claude Code.
+**Runner note**: all `mppx` commands below are invoked via `npx mppx ...`. No global install is required. The MCP proxy installed in step 4 also shells out via `npx --yes mppx` for each signing call, so mppx stays warm via npx's cache.
 
 Run the steps below in order. Stop and surface the problem to the user on any failure — do **not** silently create wallets or paper over missing prerequisites.
 
@@ -47,27 +47,31 @@ Run `npx mppx account list`.
 
 Run `npx mppx account default --account <WALLET>`. Surface any error.
 
-## 4. Register mppx `--mcp` with Claude Code
+## 4. Install the mppx MCP proxy and register it with Claude Code
 
-Check the mppx version from step 1.
+Claude Code needs a stdio MCP server for mppx signing. mppx 0.6.3's own `--mcp` mode has two upstream bugs that break unattended payment flows:
 
-- If the version is **< 0.6.5**: stop and tell the user:
+1. `mppx/dist/bin.js` calls `process.exit(0)` immediately after `cli.serve()` resolves, killing the stdio transport before any request can be processed.
+2. CLI command handlers only `console.log(...)` their output instead of returning data through the runtime, so every MCP tool returns `null` and corrupts the JSON-RPC stream with stray stdout — causing the client to disconnect mid-call.
 
-  > mppx 0.6.5 or later is required. Upgrade with:
-  > ```
-  > npx clear-npx-cache
-  > npx --yes mppx@latest --version
-  > ```
-  > Then rerun `/weftly-setup:weftly-setup --wallet <WALLET>`.
+This plugin ships a thin proxy (`scripts/mppx-mcp-proxy.mjs`) that bypasses both bugs: it implements MCP stdio itself and shells out to `npx --yes mppx sign ...` per call, parsing stdout into a structured `{authorization: "Payment ..."}` result. It exposes only the `sign` tool — that's all Weftly's payment flow needs.
 
-- If the version is **≥ 0.6.5**: register mppx's built-in MCP stdio server with Claude Code (idempotent):
+Locate the bundled proxy, copy it to a stable path, and register it with Claude Code:
 
-  ```bash
-  claude mcp remove mppx -s user 2>/dev/null || true
-  claude mcp add -s user mppx -- npx --yes mppx --mcp
-  ```
+```bash
+PROXY_SRC="$(find "$HOME/.claude/plugins" -type f -path '*weftly-setup/scripts/mppx-mcp-proxy.mjs' -print -quit)"
+if [ -z "$PROXY_SRC" ]; then
+  echo "Could not locate bundled mppx-mcp-proxy.mjs in the installed plugin." >&2
+  exit 1
+fi
+install -D -m 0755 "$PROXY_SRC" "$HOME/.claude/mppx-mcp-proxy.mjs"
 
-Verify with `claude mcp list | grep mppx` — should show `mppx` pointing at `npx --yes mppx --mcp`.
+# Re-register (idempotent): remove any prior mppx entry, then add the proxy.
+claude mcp remove mppx -s user 2>/dev/null || true
+claude mcp add -s user mppx -- node "$HOME/.claude/mppx-mcp-proxy.mjs"
+```
+
+Verify with `claude mcp list | grep mppx` — should show `mppx` pointing at `node $HOME/.claude/mppx-mcp-proxy.mjs`.
 
 ## 5. Sync mppx's bundled skills
 
@@ -75,16 +79,26 @@ Run `npx mppx skills add`.
 
 This copies skill files (notably `mppx-sign.md`) into `~/.claude/skills/`, teaching Claude when and how to call the `mppx:sign` tool in response to `payment_required` errors from any MPP-speaking MCP server.
 
-## 6. Register the Weftly MCP server with Claude Code
+## 6. Ensure the Weftly MCP server is in `.mcp.json`
 
-Register the Weftly HTTP MCP server at the user scope so it is available in every project (idempotent):
+The Weftly MCP server URL is `https://api.weftly.ai/mcp`.
 
-```bash
-claude mcp remove weftly -s user 2>/dev/null || true
-claude mcp add -s user --transport http weftly https://api.weftly.ai/mcp
-```
+Check for `.mcp.json` in the current working directory.
 
-Verify with `claude mcp list | grep weftly` — should show `weftly` pointing at `https://api.weftly.ai/mcp`.
+- If it does not exist: create it with:
+  ```json
+  {
+    "mcpServers": {
+      "weftly": {
+        "type": "http",
+        "url": "https://api.weftly.ai/mcp"
+      }
+    }
+  }
+  ```
+- If it exists and already has a `weftly` entry whose `url` matches `https://api.weftly.ai/mcp`: leave it alone.
+- If it exists and has a `weftly` entry with a **different** URL: surface the mismatch and ask the user whether to overwrite.
+- If it exists without a `weftly` entry: add the entry, preserving existing servers.
 
 ## 7. Show the wallet balance
 
@@ -101,5 +115,6 @@ Tell the user, in plain text:
 ## Notes
 
 - Never skip step 2's manual-creation requirement, even if it would simplify onboarding. mppx wallets on mainnet hold real USDC; auto-creating a differently-named wallet would silently point Claude at an empty one and any new key would also need funding before paid calls can succeed.
-- mppx 0.6.5 fixed the stdio startup and structured-output bugs (wevm/mppx PR #391); versions before 0.6.5 are not supported by this skill.
-- Step 4 is idempotent: rerunning it re-registers the MCP server. If `claude mcp list` already shows `mppx` pointing at `npx --yes mppx --mcp`, step 4 is a no-op in effect.
+- npx caches packages after first fetch; subsequent proxy `sign` calls spawn mppx quickly. To pin a specific mppx version, edit `~/.claude/mppx-mcp-proxy.mjs` and replace the `['--yes', 'mppx', ...]` args with `['--yes', 'mppx@<version>', ...]`.
+- The proxy only exposes `sign` by design — that's the only tool the unattended payment flow needs. For other mppx operations (`account list`, `account fund`, etc.), continue using `npx mppx <subcommand>` directly in a shell.
+- Step 4 is idempotent: rerunning it reinstalls the proxy and re-registers the MCP server. If `claude mcp list` already shows `mppx` pointing at the proxy, step 4 is a no-op in effect.

@@ -10,7 +10,7 @@ If you don't have a transcript yet, run `/weftly-editing:transcribe <video>` fir
 
 This skill shells out to system tools — they are **not** bundled with the plugin:
 
-- **Python 3.8+** (stdlib only; no pip packages).
+- **Python 3.10+** (stdlib only; no pip packages).
 - **`ffprobe`** — used to inspect codec / encoding properties of source and target files.
 - **`ffmpeg`** — used to extract the clip with matched encoding.
 

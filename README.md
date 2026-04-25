@@ -67,7 +67,7 @@ Editing skills that orchestrate Weftly transcription and run downstream cleanup 
 
 **Prerequisites** (in addition to whatever `weftly-setup` already gave you):
 
-- **Python 3.8+** — the editing scripts (`remove_fillers.py`, `intro_clip.py`) are stdlib-only Python.
+- **Python 3.10+** — the editing scripts (`remove_fillers.py`, `intro_clip.py`) are stdlib-only Python. 3.10 is the oldest currently-supported Python and ships by default on Ubuntu 22.04 LTS, Debian 12, current macOS Homebrew, and RHEL/Rocky 9.
 - **`curl`** — used by `/weftly-editing:transcribe` to PUT files to Weftly's presigned upload URLs. Pre-installed on virtually every macOS / Linux system.
 - **`ffmpeg` and `ffprobe`** — required by `/weftly-editing:intro-clip` (and the `transcribe-and-intro-clip` bundle) for video probing and clip extraction. Install via your platform's package manager:
   - macOS: `brew install ffmpeg`

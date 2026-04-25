@@ -10,7 +10,7 @@ Input: a path to a `.words.json` file passed as `$ARGUMENTS` (e.g., `/weftly-edi
 
 ## Prerequisites
 
-- **Python 3.8+** (stdlib only — no pip packages, no ffmpeg, no external services).
+- **Python 3.10+** (stdlib only — no pip packages, no ffmpeg, no external services).
 
 ## Locating the script
 

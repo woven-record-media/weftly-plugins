@@ -65,6 +65,18 @@ When Claude calls a paid Weftly tool, the flow is fully automatic: Weftly return
 
 Editing skills that orchestrate Weftly transcription and run downstream cleanup on the resulting word-level transcripts. Built on top of `weftly-setup` — install that one first.
 
+**Prerequisites** (in addition to whatever `weftly-setup` already gave you):
+
+- **Python 3.10+** — the editing scripts (`remove_fillers.py`, `intro_clip.py`) are stdlib-only Python. 3.10 is the oldest currently-supported Python and ships by default on Ubuntu 22.04 LTS, Debian 12, current macOS Homebrew, and RHEL/Rocky 9.
+- **`curl`** — used by `/weftly-editing:transcribe` to PUT files to Weftly's presigned upload URLs. Pre-installed on virtually every macOS / Linux system.
+- **`ffmpeg` and `ffprobe`** — required by `/weftly-editing:intro-clip` (and the `transcribe-and-intro-clip` bundle) for video probing and clip extraction. Install via your platform's package manager:
+  - macOS: `brew install ffmpeg`
+  - Debian / Ubuntu: `sudo apt install ffmpeg`
+  - Fedora: `sudo dnf install ffmpeg`
+  - Windows: `winget install ffmpeg` (or download from [ffmpeg.org](https://ffmpeg.org/download.html))
+
+  `/weftly-editing:transcribe` and `/weftly-editing:remove-fillers` do **not** need ffmpeg — only the video-clipping skills do.
+
 **1. Install the plugin** (after `weftly-setup` is installed and you've restarted Claude Code):
 
 ```

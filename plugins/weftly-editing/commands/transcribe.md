@@ -4,7 +4,7 @@ description: Transcribe a local audio/video file via Weftly. Writes <base>.words
 
 Transcribe a local audio or video file via Weftly's MCP server. The orchestrator handles payment, upload, polling, and download — final outputs are a word-level JSON transcript (`<base>.words.json`) and an SRT (`<base>.srt`) written next to the input file.
 
-The word-level JSON is the canonical transcript format consumed by the other `/weftly-editing:*` skills (`remove-fillers`, `intro-clip`). Tools that need plain SRT subtitles (video players, etc.) can use the `.srt` sibling.
+The word-level JSON is the canonical transcript format consumed by the other `/weftly-editing:*` skills (`remove-fillers`). Tools that need plain SRT subtitles (video players, etc.) can use the `.srt` sibling.
 
 Input: a local file path passed as `$ARGUMENTS` (e.g., `/weftly-editing:transcribe ~/Downloads/podcast.mp3`).
 
@@ -96,7 +96,7 @@ Transcribed → <parent_dir>/<base>.words.json
               <parent_dir>/<base>.srt
 ```
 
-Then mention the natural follow-ups: `/weftly-editing:remove-fillers <base>.words.json` to clean filler words, or `/weftly-editing:intro-clip` to extract a hook clip.
+Then mention the natural follow-up: `/weftly-editing:remove-fillers <base>.words.json` to clean filler words.
 
 ## Notes
 

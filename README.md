@@ -61,6 +61,46 @@ After restart, Claude Code gains:
 
 When Claude calls a paid Weftly tool, the flow is fully automatic: Weftly returns `payment_required` with a challenge → Claude calls `mppx:sign` (signed against your wallet) → Claude retries the Weftly call with the credential → the tool proceeds.
 
+### `weftly-setup-dev`
+
+Same shape as `weftly-setup`, but pointed at the **dev** environment (`api.dev.weftly.ai`) and a **testnet** wallet on Tempo Moderato (chain 42431). Use this when you are building or testing Weftly itself with a fake-money wallet — never for production work.
+
+**Prerequisites:**
+
+- **Node.js** (ships with `npx`)
+- **mppx 0.6.7 or later** — earlier versions ignore the challenge's `chainId: 42431` and try to send the tx on Tempo mainnet, failing with insufficient balance.
+- An **mppx wallet** with **testnet PathUSD** on Tempo Moderato (chain 42431). The wallet's mainnet USDC balance is irrelevant on dev.
+
+**1. Create and fund a testnet mppx wallet**
+
+```
+npx mppx account create
+```
+
+Pick a wallet name (e.g. `weftly-test`). Fund it with testnet PathUSD from the Tempo Moderato faucet at https://moderato.tempo.xyz/faucet, or ask in the team's #weftly-dev channel.
+
+**2. Install the plugin** (after `/plugin marketplace add ...` above):
+
+```
+/plugin install weftly-setup-dev@weftly
+```
+
+**3. Run setup with your testnet wallet name:**
+
+```
+/weftly-setup-dev:weftly-setup-dev --wallet <your-testnet-wallet>
+```
+
+#### What `/weftly-setup-dev:weftly-setup-dev` does
+
+Mirrors the prod plugin's flow but with three substantive differences:
+
+1. **Asserts mppx ≥ 0.6.7.** The chain-routing fix lands in 0.6.7; below that, testnet challenges silently sign on mainnet.
+2. **Registers `weftly` MCP at `https://api.dev.weftly.ai/mcp`** instead of `https://api.weftly.ai/mcp`.
+3. **Smoke-tests dev** by hitting `/api/test` ($0.01 testnet PathUSD) with the working incantation (`--rpc-url https://rpc.moderato.tempo.xyz`, `--method-opt mode=push`) so you confirm the whole stack — wallet, mppx, MCP transport, dev MPP middleware — before any real-shaped paid call.
+
+> Heads-up: Claude Code holds one MCP server per name. Running this plugin replaces any prior prod `weftly` registration; rerun `/weftly-setup:weftly-setup` to switch back. We're considering scoped names (`weftly` vs `weftly-dev`) once we have a real cross-env testing workflow.
+
 ### `weftly-editing`
 
 Editing skills that orchestrate Weftly transcription and run downstream cleanup on the resulting word-level transcripts. Built on top of `weftly-setup` — install that one first.

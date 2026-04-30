@@ -45,21 +45,14 @@ The `--wallet` flag is required — no silent defaults, because mppx wallets hol
 
 #### What `/weftly-setup:weftly-setup` does
 
-1. Checks that `npx` is available and warms the mppx cache.
-2. Verifies the named wallet exists in the mppx keychain.
-3. Sets it as the default mppx account.
-4. Installs a small local MCP stdio proxy (`~/.claude/mppx-mcp-proxy.mjs`) that shells out to `npx --yes mppx sign` per call, and registers it with Claude Code as the `mppx` MCP server (`claude mcp add -s user mppx -- node ~/.claude/mppx-mcp-proxy.mjs`). The proxy is a workaround for [wevm/mppx#386](https://github.com/wevm/mppx/issues/386) and [#387](https://github.com/wevm/mppx/issues/387), which currently make mppx's own `--mcp` mode unusable from MCP clients.
-5. Syncs mppx's bundled skills into `~/.claude/skills/` so Claude knows to call `mppx:sign` on `payment_required` errors (`npx mppx skills add`).
-6. Adds a `weftly` entry to the project's `.mcp.json` pointing at the Weftly MCP server.
-7. Prints your wallet balance.
-8. Prompts you to restart Claude Code.
+1. Verifies `npx` and `mppx >= 0.6.5` are available.
+2. Confirms the named wallet exists in your mppx keychain and sets it as the default.
+3. Registers the mppx MCP server with Claude Code (user-scoped), which exposes the `mppx:sign` tool Claude needs to satisfy payment challenges.
+4. Syncs mppx's bundled skills so Claude knows to call `mppx:sign` automatically when a paid tool returns `payment_required`.
+5. Registers the Weftly MCP server with Claude Code (user-scoped), making Weftly tools available in every project after a single setup run.
+6. Prints your wallet balance and prompts you to restart Claude Code.
 
-After restart, Claude Code gains:
-
-- `weftly:transcribe`, `weftly:summarize`, `weftly:complete_upload`, `weftly:get_job_status` (and any future Weftly tools) from the remote HTTP MCP server.
-- `mppx:sign` from the local stdio MCP proxy. (Other mppx operations — `account list`, `account fund`, etc. — remain available via `npx mppx <subcommand>` directly in a shell; the proxy intentionally only exposes `sign`, since that's what the unattended payment flow needs.)
-
-When Claude calls a paid Weftly tool, the flow is fully automatic: Weftly returns `payment_required` with a challenge → Claude calls `mppx:sign` (signed against your wallet) → Claude retries the Weftly call with the credential → the tool proceeds.
+After restart, paid Weftly calls are fully automatic: Weftly returns a payment challenge → Claude signs it with your wallet → the tool proceeds.
 
 ### `weftly-setup-dev`
 

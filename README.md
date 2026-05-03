@@ -1,6 +1,6 @@
 # Weftly Plugins for Claude Code
 
-Official Claude Code plugins for [Weftly](https://weftly.ai) — agent-native transcription, summarization, and more. Plugins in this marketplace wire Claude Code up to call the Weftly MCP server with automatic [MPP](https://mpp.dev) payments from your own mppx wallet.
+Official Claude Code plugins for [Weftly](https://weftly.ai) — agent-native transcription, summarization, and clip extraction (find compelling moments, cut horizontal or 9:16 vertical clips). Plugins in this marketplace wire Claude Code up to call the Weftly MCP server with automatic [MPP](https://mpp.dev) payments from your own mppx wallet.
 
 ## Install the marketplace
 
@@ -129,10 +129,14 @@ Because mppx's own skills teach Claude the payment dance, you do not need a new 
 
 Current Weftly pricing (in USDC):
 
-| Tool | Audio | Video |
-|------|------:|------:|
-| `transcribe` | $0.50 | $1.00 |
-| `summarize`  | $0.75 | $1.25 |
+| Tool | Price | Notes |
+|------|------:|-------|
+| `transcribe` | $0.50 audio / $1.00 video | SRT transcript |
+| `summarize`  | $0.75 audio / $1.25 video | Includes the full transcript as a free byproduct |
+| `find_clips` | $2.00 video | Returns ranked candidate clips with timestamps + full text. Includes the transcript as a free byproduct — don't call `transcribe` first. |
+| `extract_clip` | $0.50 | Cuts a horizontal `.mp4` from a parent video job. Single segment or multi-segment composition — same flat $0.50 either way. |
+| `extract_vertical_clip` | $0.50 | Cuts a 9:16 `.mp4` from a parent video job (TikTok / Reels / Shorts ready). Single segment, ≤90s. |
+| `mpp_smoke_test` | $0.01 | Verifies your MPP plumbing before any real-cost call. |
 
 Canonical prices are served by the Weftly MCP server at `tools/list` time — the table above is a snapshot. See [weftly.ai](https://weftly.ai) for the latest.
 

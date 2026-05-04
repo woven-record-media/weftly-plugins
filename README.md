@@ -122,6 +122,8 @@ Editing skills that orchestrate Weftly transcription and run downstream cleanup 
 
 **Data retention:** files you upload to Weftly and the transcripts it produces are retained for up to 24 hours and then deleted. Download anything you want to keep — these skills always write the transcripts to disk next to your input file. See [weftly.ai](https://weftly.ai) for the privacy policy and terms of service.
 
+**Try the read-only skills without paying for transcription:** [`plugins/weftly-editing/examples/sample.words.json`](./plugins/weftly-editing/examples/sample.words.json) is a hand-crafted ~31s `weftly-transcript-v2` sample you can run `identify-intro-clip`, `remove-fillers`, or `write-blog-post` against without spending anything. See [`examples/README.md`](./plugins/weftly-editing/examples/README.md) for the schema notes and example invocations.
+
 ## How payments work
 
 Weftly speaks the [Machine Payments Protocol (MPP)](https://mpp.dev). Every paid tool call consumes a small amount of USDC from your mppx wallet — $0.50 for audio transcription, $1.00 for video, etc. (see [pricing](https://weftly.ai)). The wallet and signing happen entirely on your machine; Weftly never sees your key.

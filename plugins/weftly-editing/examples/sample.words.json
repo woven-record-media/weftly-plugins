@@ -1,0 +1,139 @@
+{
+  "format": "weftly-transcript-v2",
+  "segments": [
+    {
+      "index": 1,
+      "start": 0.0,
+      "end": 2.78,
+      "text": "Hi everyone, um, welcome to the show."
+    },
+    {
+      "index": 2,
+      "start": 3.10,
+      "end": 7.48,
+      "text": "Today we're talking about how to ship faster without breaking things."
+    },
+    {
+      "index": 3,
+      "start": 7.80,
+      "end": 13.18,
+      "text": "And I think the biggest mistake is, you know, treating speed and quality as opposites."
+    },
+    {
+      "index": 4,
+      "start": 13.50,
+      "end": 17.78,
+      "text": "But when you have good tests, they reinforce each other."
+    },
+    {
+      "index": 5,
+      "start": 18.10,
+      "end": 20.50,
+      "text": "So let me walk you through what I mean."
+    },
+    {
+      "index": 6,
+      "start": 20.80,
+      "end": 25.50,
+      "text": "The first thing is to invest in your test suite before you try to go fast."
+    },
+    {
+      "index": 7,
+      "start": 25.90,
+      "end": 30.95,
+      "text": "If you trust your tests, you can ship five times a day and sleep at night."
+    }
+  ],
+  "words": [
+    { "word": "Hi", "start": 0.05, "end": 0.25 },
+    { "word": "everyone,", "start": 0.30, "end": 0.78 },
+    { "word": "um,", "start": 0.95, "end": 1.20 },
+    { "word": "welcome", "start": 1.45, "end": 1.85 },
+    { "word": "to", "start": 1.90, "end": 2.00 },
+    { "word": "the", "start": 2.05, "end": 2.18 },
+    { "word": "show.", "start": 2.25, "end": 2.78 },
+
+    { "word": "Today", "start": 3.10, "end": 3.45 },
+    { "word": "we're", "start": 3.50, "end": 3.72 },
+    { "word": "talking", "start": 3.78, "end": 4.18 },
+    { "word": "about", "start": 4.22, "end": 4.55 },
+    { "word": "how", "start": 4.65, "end": 4.85 },
+    { "word": "to", "start": 4.90, "end": 5.00 },
+    { "word": "ship", "start": 5.05, "end": 5.32 },
+    { "word": "faster", "start": 5.38, "end": 5.80 },
+    { "word": "without", "start": 5.88, "end": 6.30 },
+    { "word": "breaking", "start": 6.35, "end": 6.78 },
+    { "word": "things.", "start": 6.85, "end": 7.48 },
+
+    { "word": "And", "start": 7.80, "end": 7.95 },
+    { "word": "I", "start": 7.98, "end": 8.05 },
+    { "word": "think", "start": 8.10, "end": 8.32 },
+    { "word": "the", "start": 8.38, "end": 8.50 },
+    { "word": "biggest", "start": 8.55, "end": 8.92 },
+    { "word": "mistake", "start": 8.98, "end": 9.40 },
+    { "word": "is,", "start": 9.45, "end": 9.72 },
+    { "word": "you", "start": 9.85, "end": 10.00 },
+    { "word": "know,", "start": 10.05, "end": 10.35 },
+    { "word": "treating", "start": 10.55, "end": 11.00 },
+    { "word": "speed", "start": 11.05, "end": 11.32 },
+    { "word": "and", "start": 11.38, "end": 11.50 },
+    { "word": "quality", "start": 11.55, "end": 12.00 },
+    { "word": "as", "start": 12.08, "end": 12.20 },
+    { "word": "opposites.", "start": 12.28, "end": 13.18 },
+
+    { "word": "But", "start": 13.50, "end": 13.70 },
+    { "word": "when", "start": 13.78, "end": 13.95 },
+    { "word": "you", "start": 14.00, "end": 14.10 },
+    { "word": "have", "start": 14.15, "end": 14.35 },
+    { "word": "good", "start": 14.42, "end": 14.65 },
+    { "word": "tests,", "start": 14.72, "end": 15.18 },
+    { "word": "they", "start": 15.32, "end": 15.50 },
+    { "word": "reinforce", "start": 15.55, "end": 16.20 },
+    { "word": "each", "start": 16.28, "end": 16.50 },
+    { "word": "other.", "start": 16.55, "end": 17.78 },
+
+    { "word": "So", "start": 18.10, "end": 18.30 },
+    { "word": "let", "start": 18.35, "end": 18.50 },
+    { "word": "me", "start": 18.55, "end": 18.65 },
+    { "word": "walk", "start": 18.72, "end": 19.00 },
+    { "word": "you", "start": 19.05, "end": 19.18 },
+    { "word": "through", "start": 19.22, "end": 19.55 },
+    { "word": "what", "start": 19.62, "end": 19.85 },
+    { "word": "I", "start": 19.90, "end": 20.00 },
+    { "word": "mean.", "start": 20.05, "end": 20.50 },
+
+    { "word": "The", "start": 20.80, "end": 20.95 },
+    { "word": "first", "start": 21.00, "end": 21.30 },
+    { "word": "thing", "start": 21.35, "end": 21.62 },
+    { "word": "is", "start": 21.68, "end": 21.85 },
+    { "word": "to", "start": 21.92, "end": 22.05 },
+    { "word": "invest", "start": 22.10, "end": 22.50 },
+    { "word": "in", "start": 22.55, "end": 22.65 },
+    { "word": "your", "start": 22.70, "end": 22.90 },
+    { "word": "test", "start": 22.95, "end": 23.20 },
+    { "word": "suite", "start": 23.25, "end": 23.65 },
+    { "word": "before", "start": 23.72, "end": 24.05 },
+    { "word": "you", "start": 24.10, "end": 24.25 },
+    { "word": "try", "start": 24.30, "end": 24.55 },
+    { "word": "to", "start": 24.60, "end": 24.72 },
+    { "word": "go", "start": 24.78, "end": 24.95 },
+    { "word": "fast.", "start": 25.00, "end": 25.50 },
+
+    { "word": "If", "start": 25.90, "end": 26.05 },
+    { "word": "you", "start": 26.10, "end": 26.22 },
+    { "word": "trust", "start": 26.28, "end": 26.55 },
+    { "word": "your", "start": 26.62, "end": 26.82 },
+    { "word": "tests,", "start": 26.88, "end": 27.30 },
+    { "word": "you", "start": 27.45, "end": 27.62 },
+    { "word": "can", "start": 27.68, "end": 27.85 },
+    { "word": "ship", "start": 27.92, "end": 28.20 },
+    { "word": "five", "start": 28.28, "end": 28.62 },
+    { "word": "times", "start": 28.68, "end": 29.00 },
+    { "word": "a", "start": 29.05, "end": 29.12 },
+    { "word": "day", "start": 29.18, "end": 29.50 },
+    { "word": "and", "start": 29.58, "end": 29.75 },
+    { "word": "sleep", "start": 29.82, "end": 30.12 },
+    { "word": "at", "start": 30.18, "end": 30.30 },
+    { "word": "night.", "start": 30.38, "end": 30.95 }
+  ]
+}

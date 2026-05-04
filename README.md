@@ -116,6 +116,7 @@ Editing skills that orchestrate Weftly transcription and run downstream cleanup 
 | `/weftly-editing:transcribe <file>` | Pay, upload, poll, and download. Writes `<base>.words.json` and `<base>.srt` next to the input file. |
 | `/weftly-editing:remove-fillers <words.json>` | Remove filler words and false starts from a word-level transcript, using a configurable gap-threshold heuristic. Writes `<base>_cleaned.words.json` and `<base>_cleaned.srt`. |
 | `/weftly-editing:transcribe-and-remove-fillers <file>` | Bundled: transcribe → remove-fillers in one shot. |
+| `/weftly-editing:identify-intro-clip <words.json or .srt>` | Read a timestamped transcript and recommend 30–60s intro hook candidates with timestamps and rationale. Read-only and free — no Weftly API calls, no ffmpeg, no video output. |
 
 **Data retention:** files you upload to Weftly and the transcripts it produces are retained for up to 24 hours and then deleted. Download anything you want to keep — these skills always write the transcripts to disk next to your input file. See [weftly.ai](https://weftly.ai) for the privacy policy and terms of service.
 

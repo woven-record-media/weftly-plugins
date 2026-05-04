@@ -83,12 +83,30 @@ Verify with `claude mcp list | grep weftly` — should show `weftly` pointing at
 
 Run `npx --yes mppx@^0.6.5 account view --account <WALLET>` and surface the output verbatim so the user sees the current address and balance before their first paid call. Flag if the balance is clearly too low (e.g. $0.00) to complete a transcribe ($0.50 audio, $1.00 video).
 
-## 8. Print next steps
+## 8. Verify the payment loop with a $0.01 smoke test
+
+Before the user attempts a real job (where a stuck payment costs $0.50–$2.00), prove the wallet → MPP → Weftly path actually settles end-to-end. Run:
+
+```bash
+npx --yes mppx@^0.6.5 https://api.weftly.ai/api/test
+```
+
+Expected output: `{"paid":true,"service":"weftly-worker"}`. This deducts $0.01 USDC from `<WALLET>` and confirms the full sign + broadcast + verify loop.
+
+If the call returns `payment_required` repeatedly or "Payment verification failed", do **not** advise the user to retry their `transcribe` call. Likely causes:
+
+- Wallet not funded on Tempo mainnet (`account view` showed only testnet balances).
+- Wrong default account — re-check `account default` from step 3.
+- `--rpc-url` needed for a non-standard endpoint (rare on mainnet).
+
+Surface the failing output verbatim and stop, rather than burning the user's USDC on a real job that will hit the same block.
+
+## 9. Print next steps
 
 Tell the user, in plain text:
 
-1. Restart Claude Code — the new MCP servers and skills only load on a fresh session.
-2. After restart, verify `mppx:sign` and `weftly:transcribe` appear in the available tool list.
+1. Run `/reload-plugins` (or restart Claude Code) — the new MCP servers and skills need to be loaded into the session.
+2. Verify `mppx:sign` and `weftly:transcribe` appear in the available tool list.
 3. Try a paid call, e.g.: "transcribe ./sample.mp3 using Weftly". Claude should handle the `payment_required` → `mppx:sign` → retry loop automatically.
 
 ## Notes
@@ -97,3 +115,4 @@ Tell the user, in plain text:
 - The `^0.6.5` pin in every `npx --yes mppx@^0.6.5 ...` invocation is deliberate: bare `npx mppx` will reuse whatever mppx the npx cache already resolved on this machine, which can be a much older version (e.g. 0.5.x) whose `--mcp` mode silently exits without responding. `^0.6.5` forces npx to fetch a build that includes the MCP stdio fix.
 - Step 4 is idempotent: rerunning it just re-registers the MCP server. If `claude mcp list` already shows `mppx` pointing at `npx --yes mppx@^0.6.5 --mcp`, step 4 is effectively a no-op.
 - For ad-hoc shell use (e.g. `account fund`, `account view`), invoke mppx with the same pin: `npx --yes mppx@^0.6.5 <subcommand>`.
+- **`mppx <url>` vs `mppx sign`** — the bare HTTP wrapper (`mppx <url>`) signs **and** broadcasts the on-chain payment in one step, then retries the request. `mppx sign` only produces an offline-signed credential; sending that credential back to a Weftly endpoint without separately settling the underlying transaction will fail server-side verification with `Payment verification failed`. The smoke test in step 8 uses `mppx <url>` for exactly this reason. When debugging payment issues from the shell, prefer `mppx <url>` over `mppx sign`.

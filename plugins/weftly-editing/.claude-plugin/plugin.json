@@ -1,5 +1,5 @@
 {
   "name": "weftly-editing",
-  "description": "Transcribe local audio/video via Weftly and run editing skills (filler removal, intro hook identification) on the output.",
-  "version": "0.3.0"
+  "description": "Transcribe local audio/video via Weftly and run editing skills (filler removal, intro hook identification, blog post generation) on the output.",
+  "version": "0.4.0"
 }

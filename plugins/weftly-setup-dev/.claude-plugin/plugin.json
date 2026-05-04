@@ -1,0 +1,5 @@
+{
+  "name": "weftly-setup-dev",
+  "description": "Dev-mode setup for Weftly MCP + mppx wallet payments. Points at api.dev.weftly.ai and Tempo Moderato testnet.",
+  "version": "0.1.0"
+}

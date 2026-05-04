@@ -1,6 +1,6 @@
 # Weftly Plugins for Claude Code
 
-Official Claude Code plugins for [Weftly](https://weftly.ai) — agent-native transcription, summarization, and more. Plugins in this marketplace wire Claude Code up to call the Weftly MCP server with automatic [MPP](https://mpp.dev) payments from your own mppx wallet.
+Official Claude Code plugins for [Weftly](https://weftly.ai) — agent-native transcription, summarization, and clip extraction (find compelling moments, cut horizontal or 9:16 vertical clips). Plugins in this marketplace wire Claude Code up to call the Weftly MCP server with automatic [MPP](https://mpp.dev) payments from your own mppx wallet.
 
 ## Install the marketplace
 
@@ -45,21 +45,54 @@ The `--wallet` flag is required — no silent defaults, because mppx wallets hol
 
 #### What `/weftly-setup:weftly-setup` does
 
-1. Checks that `npx` is available and warms the mppx cache.
-2. Verifies the named wallet exists in the mppx keychain.
-3. Sets it as the default mppx account.
-4. Installs a small local MCP stdio proxy (`~/.claude/mppx-mcp-proxy.mjs`) that shells out to `npx --yes mppx sign` per call, and registers it with Claude Code as the `mppx` MCP server (`claude mcp add -s user mppx -- node ~/.claude/mppx-mcp-proxy.mjs`). The proxy is a workaround for [wevm/mppx#386](https://github.com/wevm/mppx/issues/386) and [#387](https://github.com/wevm/mppx/issues/387), which currently make mppx's own `--mcp` mode unusable from MCP clients.
-5. Syncs mppx's bundled skills into `~/.claude/skills/` so Claude knows to call `mppx:sign` on `payment_required` errors (`npx mppx skills add`).
-6. Adds a `weftly` entry to the project's `.mcp.json` pointing at the Weftly MCP server.
-7. Prints your wallet balance.
-8. Prompts you to restart Claude Code.
+1. Verifies `npx` and `mppx >= 0.6.5` are available.
+2. Confirms the named wallet exists in your mppx keychain and sets it as the default.
+3. Registers the mppx MCP server with Claude Code (user-scoped), which exposes the `mppx:sign` tool Claude needs to satisfy payment challenges.
+4. Syncs mppx's bundled skills so Claude knows to call `mppx:sign` automatically when a paid tool returns `payment_required`.
+5. Registers the Weftly MCP server with Claude Code (user-scoped), making Weftly tools available in every project after a single setup run.
+6. Prints your wallet balance and prompts you to restart Claude Code.
 
-After restart, Claude Code gains:
+After restart, paid Weftly calls are fully automatic: Weftly returns a payment challenge → Claude signs it with your wallet → the tool proceeds.
 
-- `weftly:transcribe`, `weftly:summarize`, `weftly:complete_upload`, `weftly:get_job_status` (and any future Weftly tools) from the remote HTTP MCP server.
-- `mppx:sign` from the local stdio MCP proxy. (Other mppx operations — `account list`, `account fund`, etc. — remain available via `npx mppx <subcommand>` directly in a shell; the proxy intentionally only exposes `sign`, since that's what the unattended payment flow needs.)
+### `weftly-setup-dev`
 
-When Claude calls a paid Weftly tool, the flow is fully automatic: Weftly returns `payment_required` with a challenge → Claude calls `mppx:sign` (signed against your wallet) → Claude retries the Weftly call with the credential → the tool proceeds.
+Same shape as `weftly-setup`, but pointed at the **dev** environment (`api.dev.weftly.ai`) and a **testnet** wallet on Tempo Moderato (chain 42431). Use this when you are building or testing Weftly itself with a fake-money wallet — never for production work.
+
+**Prerequisites:**
+
+- **Node.js** (ships with `npx`)
+- **mppx 0.6.7 or later** — earlier versions ignore the challenge's `chainId: 42431` and try to send the tx on Tempo mainnet, failing with insufficient balance.
+- An **mppx wallet** with **testnet PathUSD** on Tempo Moderato (chain 42431). The wallet's mainnet USDC balance is irrelevant on dev.
+
+**1. Create and fund a testnet mppx wallet**
+
+```
+npx mppx account create
+```
+
+Pick a wallet name (e.g. `weftly-test`). Fund it with testnet PathUSD from the Tempo Moderato faucet at https://moderato.tempo.xyz/faucet, or ask in the team's #weftly-dev channel.
+
+**2. Install the plugin** (after `/plugin marketplace add ...` above):
+
+```
+/plugin install weftly-setup-dev@weftly
+```
+
+**3. Run setup with your testnet wallet name:**
+
+```
+/weftly-setup-dev:weftly-setup-dev --wallet <your-testnet-wallet>
+```
+
+#### What `/weftly-setup-dev:weftly-setup-dev` does
+
+Mirrors the prod plugin's flow but with three substantive differences:
+
+1. **Asserts mppx ≥ 0.6.7.** The chain-routing fix lands in 0.6.7; below that, testnet challenges silently sign on mainnet.
+2. **Registers `weftly` MCP at `https://api.dev.weftly.ai/mcp`** instead of `https://api.weftly.ai/mcp`.
+3. **Smoke-tests dev** by hitting `/api/test` ($0.01 testnet PathUSD) with the working incantation (`--rpc-url https://rpc.moderato.tempo.xyz`, `--method-opt mode=push`) so you confirm the whole stack — wallet, mppx, MCP transport, dev MPP middleware — before any real-shaped paid call.
+
+> Heads-up: Claude Code holds one MCP server per name. Running this plugin replaces any prior prod `weftly` registration; rerun `/weftly-setup:weftly-setup` to switch back. We're considering scoped names (`weftly` vs `weftly-dev`) once we have a real cross-env testing workflow.
 
 ### `weftly-editing`
 
@@ -96,10 +129,14 @@ Because mppx's own skills teach Claude the payment dance, you do not need a new 
 
 Current Weftly pricing (in USDC):
 
-| Tool | Audio | Video |
-|------|------:|------:|
-| `transcribe` | $0.50 | $1.00 |
-| `summarize`  | $0.75 | $1.25 |
+| Tool | Price | Notes |
+|------|------:|-------|
+| `transcribe` | $0.50 audio / $1.00 video | SRT transcript |
+| `summarize`  | $0.75 audio / $1.25 video | Includes the full transcript as a free byproduct |
+| `find_clips` | $2.00 video | Returns ranked candidate clips with timestamps + full text. Includes the transcript as a free byproduct — don't call `transcribe` first. |
+| `extract_clip` | $0.50 | Cuts a horizontal `.mp4` from a parent video job. Single segment or multi-segment composition — same flat $0.50 either way. |
+| `extract_vertical_clip` | $0.50 | Cuts a 9:16 `.mp4` from a parent video job (TikTok / Reels / Shorts ready). Single segment, ≤90s. |
+| `mpp_smoke_test` | $0.01 | Verifies your MPP plumbing before any real-cost call. |
 
 Canonical prices are served by the Weftly MCP server at `tools/list` time — the table above is a snapshot. See [weftly.ai](https://weftly.ai) for the latest.
 

@@ -14,6 +14,12 @@
       "version": "0.7.0"
     },
     {
+      "name": "weftly-setup-dev",
+      "source": "./plugins/weftly-setup-dev",
+      "description": "Dev-mode setup for Weftly MCP + mppx wallet payments. Points at api.dev.weftly.ai and Tempo Moderato testnet (chain 42431). Internal testing only.",
+      "version": "0.1.0"
+    },
+    {
       "name": "weftly-editing",
       "source": "./plugins/weftly-editing",
       "description": "Transcribe local audio/video via Weftly and run editing skills (filler removal) on the output.",

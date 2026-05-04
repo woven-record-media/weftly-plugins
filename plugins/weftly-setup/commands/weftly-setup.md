@@ -106,8 +106,8 @@ Surface the failing output verbatim and stop, rather than burning the user's USD
 Tell the user, in plain text:
 
 1. Run `/reload-plugins` (or restart Claude Code) — the new MCP servers and skills need to be loaded into the session.
-2. Verify `mppx:sign` and `weftly:transcribe` appear in the available tool list.
-3. Try a paid call, e.g.: "transcribe ./sample.mp3 using Weftly". Claude should handle the `payment_required` → `mppx:sign` → retry loop automatically.
+2. Verify `mppx:sign`, `weftly:transcribe`, `weftly:summarize`, `weftly:find_clips`, `weftly:extract_clip`, and `weftly:extract_vertical_clip` appear in the available tool list.
+3. Try a paid call, e.g.: "transcribe ./sample.mp3 using Weftly" or "find clips in ./interview.mp4 using Weftly". Claude should handle the `payment_required` → `mppx:sign` → retry loop automatically.
 
 ## Notes
 

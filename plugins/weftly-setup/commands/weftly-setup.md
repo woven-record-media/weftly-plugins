@@ -88,8 +88,8 @@ Run `npx --yes mppx@^0.6.5 account view --account <WALLET>` and surface the outp
 Tell the user, in plain text:
 
 1. Restart Claude Code — the new MCP servers and skills only load on a fresh session.
-2. After restart, verify `mppx:sign` and `weftly:transcribe` appear in the available tool list.
-3. Try a paid call, e.g.: "transcribe ./sample.mp3 using Weftly". Claude should handle the `payment_required` → `mppx:sign` → retry loop automatically.
+2. After restart, verify `mppx:sign`, `weftly:transcribe`, `weftly:summarize`, `weftly:find_clips`, `weftly:extract_clip`, and `weftly:extract_vertical_clip` appear in the available tool list.
+3. Try a paid call, e.g.: "transcribe ./sample.mp3 using Weftly" or "find clips in ./interview.mp4 using Weftly". Claude should handle the `payment_required` → `mppx:sign` → retry loop automatically.
 
 ## Notes
 

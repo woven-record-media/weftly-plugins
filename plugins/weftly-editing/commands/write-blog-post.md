@@ -119,7 +119,13 @@ Write a blog post that follows these rules:
 - Match the chosen **style** (voice + structure from the table).
 - Weave **SEO tags** naturally into title, meta description, opener, and (listicle) H2s. No stuffing — the post must read normally.
 - Surface **AEO tags** near-verbatim in the body, framed as questions answered or claims made.
-- **Don't fabricate quotes** — every direct quote must come from the transcript, verbatim or near-verbatim. Paraphrasing the speaker's ideas is fine; inventing words they didn't say is not.
+- **Don't fabricate quotes.** Paraphrasing the speaker's ideas is fine; inventing words they didn't say is not. The rules for material inside quote marks (`"…"`):
+  - **Verbatim or contiguous** — every word inside a single set of quote marks must appear in the source as a contiguous run (allowing one or two adjacent cues to be joined).
+  - **No silent stitching of non-adjacent fragments.** If you want to combine two phrases the speaker said in different parts of the transcript, render them as **two separate quoted phrases** in your prose (`Kerkhoff says he was "pretty ignorant about Africa" and now describes the same villages as "my homes"`), not as one quote with the gap hidden.
+  - **Visible elision only.** If you trim mid-quote, signal it with an ellipsis or a clearly broken second quote — never with an em-dash that disguises the cut. `"I used to be so frustrated… it just feels so much more healthy"` is honest; `"I used to be so frustrated — it just feels so much more healthy"` is not, because the dash hides that those phrases are non-adjacent in the source.
+  - **Filler at the boundary may be trimmed without elision** — if the verbatim text starts with "uh" or "like" and you skip it, that's fine without an ellipsis; readers don't need to see disfluency cut.
+  - **Pull-quotes are stricter than body quotes.** Pull-quote `text` fields must be a single contiguous run from one cue or word range. No stitching at all.
+- **Spelling: prefer the speaker's own spelling over the transcriber's.** If the speaker spells their own name or a brand name aloud somewhere in the transcript (e.g. `K-E-R-K-H-O-F-F`), use that spelling everywhere — title, body, author, slug — even if the auto-transcription rendered it differently earlier in the file. Same rule for any other proper noun that's clearly mis-transcribed but verifiable from context (e.g. an artist's name spelled correctly elsewhere on the speaker's website or in adjacent files in the same directory).
 
 ### 7. Generate metadata
 
@@ -132,10 +138,11 @@ Write a blog post that follows these rules:
 
 ### 8. Extract pull-quotes
 
-Pick **2–3 strong 1-sentence quotes** verbatim from the transcript. For each:
+Pick **2–3 strong 1-sentence quotes** from the transcript. For each:
 
-- Verbatim text from the source (not from the post body, which paraphrases).
-- Source timestamp if available (`MM:SS` format).
+- **Single contiguous run from the source.** Pull-quote `text` must be one uninterrupted span of words from the transcript — one cue, or adjacent cues whose text reads naturally when joined. **Never stitch non-adjacent fragments** in a pull-quote, even with an ellipsis. If the strongest material is split across the transcript, pick a different pull-quote rather than fabricating contiguity.
+- **Drawn from the source, not the post body.** The post body may paraphrase or compress; pull-quotes are the speaker's actual words and must reflect that.
+- Source timestamp from the cue or word boundary where the run starts (`MM:SS` format).
 - These go in the frontmatter as a `pull_quotes` array, ready for the user to render as callout cards or social tiles.
 
 ### 9. (Optional) FAQ block

@@ -102,11 +102,14 @@ For `.txt`, read the whole text.
 
 ### 2. Infer author (default)
 
-Try to identify the speaker from the transcript:
+Try to identify the speaker(s) from the transcript:
 - Title or filename hints (e.g., `daniel_kerkhoff_interview.words.json` → Daniel Kerkhoff)
 - The first ~30 lines often introduce the speaker ("We're here with X" / "Welcome, Y")
+- **Co-hosted formats** introduce two or more speakers in the opening (e.g. "my name is X and this is The Show, and I'm Y"). When you see this pattern, capture **all** named speakers, not just the first one.
 
-Surface the inferred author for confirmation. Override with `--author` if the user provides it.
+Surface the inferred author(s) for confirmation. Override with `--author` if the user provides it.
+
+`--author` accepts either a single name (`"Daniel Kerkhoff"`) or a comma-separated list (`"Mike Lagerquist, Becki True"`). The frontmatter `author` field is rendered as a string for solo speakers or as a `&`-joined string for co-hosts (`Mike Lagerquist & Becki True`).
 
 ### 3. Ask for tone (if no `--tone` flag)
 
@@ -160,7 +163,7 @@ For each draft, count characters (including spaces, hashtags, and any inline URL
 - If a variant **exceeds** its platform ceiling, tighten it and re-count. Do not ship a draft over the limit.
 - If a variant lands **far below** the target band (e.g. a 200-char LinkedIn post when the target is 1200–1800), expand it with material from the transcript rather than padding.
 
-Record the final character count in the output file's frontmatter.
+**Measure the count, do not estimate it.** Use a real character counter (e.g. `python3 -c 'import sys; print(len(sys.stdin.read()))'` against the variant body, or `wc -m` minus 1 for the trailing newline) on the exact text you are about to write. Eyeballed estimates routinely come in 5–10% off, which is fine for soft target bands but can put a draft silently over a hard ceiling (X 280, Bluesky 300). Both the inline `[N chars, M hashtags]` line under each variant heading and the `char_count` value in frontmatter must reflect the measured number.
 
 ### 9. Write one file per platform
 
@@ -249,6 +252,8 @@ Instagram files additionally include a `visual_hint` field per variant in the fr
 X files: if variant B is a thread, render it as three numbered code blocks under `## Variant B (thread)`, each labeled with its char count.
 
 Reddit files: omit `hashtags` from frontmatter (it's always empty). Include a trailing `Source: <url>` footer in the body if `--source-url` is set, separated by a blank line.
+
+Co-hosted content: render `author` in frontmatter as a `&`-joined string (e.g. `author: Mike Lagerquist & Becki True`). Don't try to encode it as a YAML list — downstream tools that read frontmatter expect a string here.
 
 ## Notes
 

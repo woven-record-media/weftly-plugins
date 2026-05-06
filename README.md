@@ -126,9 +126,13 @@ Editing skills that orchestrate Weftly transcription and run downstream cleanup 
 
 ## How payments work
 
-Weftly speaks the [Machine Payments Protocol (MPP)](https://mpp.dev). Every paid tool call consumes a small amount of USDC from your mppx wallet — $0.50 for audio transcription, $1.00 for video, etc. (see [pricing](https://weftly.ai)). The wallet and signing happen entirely on your machine; Weftly never sees your key.
+Weftly's MCP tools are **dual-rail**: every `payment_required` response carries both an MPP challenge AND a Stripe Checkout URL, so the same tool call works whether the caller has a crypto wallet or not.
 
-Because mppx's own skills teach Claude the payment dance, you do not need a new skill for each Weftly service. New tools ship in the Weftly MCP server, your Claude picks them up on restart, payments just work.
+**MPP (crypto, automatic).** Weftly speaks the [Machine Payments Protocol](https://mpp.dev). Terminal hosts like Claude Code that have `mppx` available — set up via `/weftly-setup:weftly-setup` — sign the challenge with your wallet and the call proceeds with no human in the loop. Every paid tool consumes a small amount of USDC from your mppx wallet ($0.50 audio transcription, $1.00 video, etc. — see [pricing](https://weftly.ai)). The wallet and signing happen entirely on your machine; Weftly never sees your key.
+
+**Credit card via Stripe Checkout (manual).** Browser-based MCP hosts that don't have a payment signer — claude.ai, Claude Desktop, VS Code Copilot Chat — open the `payment_url` from the same response, pay by card on Stripe-hosted checkout, and then ask the assistant to retry the tool with the same `job_id`. The Stripe webhook reconciles back to the job, so the retry just works.
+
+Because mppx's own skills teach Claude the MPP dance, and the credit-card path is just "open the URL and come back," you do not need a new skill for each Weftly service. New tools ship in the Weftly MCP server, your Claude picks them up on restart, payments just work on whichever rail your host supports.
 
 ## Pricing
 

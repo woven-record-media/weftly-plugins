@@ -45,7 +45,7 @@ The `--wallet` flag is required — no silent defaults, because mppx wallets hol
 
 #### What `/weftly-setup:weftly-setup` does
 
-1. Verifies `npx` and `mppx >= 0.6.5` are available.
+1. Verifies `npx` and `mppx >= 0.8.17` are available. The signer must match the Weftly worker; they drift apart silently and the failure is a live payment failure, not a red build.
 2. Confirms the named wallet exists in your mppx keychain and sets it as the default.
 3. Registers the mppx MCP server with Claude Code (user-scoped), which exposes the `mppx:sign` tool Claude needs to satisfy payment challenges.
 4. Syncs mppx's bundled skills so Claude knows to call `mppx:sign` automatically when a paid tool returns `payment_required`.
@@ -61,7 +61,7 @@ Same shape as `weftly-setup`, but pointed at the **dev** environment (`api.dev.w
 **Prerequisites:**
 
 - **Node.js** (ships with `npx`)
-- **mppx 0.6.7 or later** — earlier versions ignore the challenge's `chainId: 42431` and try to send the tx on Tempo mainnet, failing with insufficient balance.
+- **mppx 0.8.17 or later** — matches the worker. (Below 0.6.7 there is also a chain-routing bug: those versions ignore the challenge's `chainId: 42431` and try to send the tx on Tempo mainnet, failing with insufficient balance.)
 - An **mppx wallet** with **testnet PathUSD** on Tempo Moderato (chain 42431). The wallet's mainnet USDC balance is irrelevant on dev.
 
 **1. Create and fund a testnet mppx wallet**
@@ -88,7 +88,7 @@ Pick a wallet name (e.g. `weftly-test`). Fund it with testnet PathUSD from the T
 
 Mirrors the prod plugin's flow but with three substantive differences:
 
-1. **Asserts mppx ≥ 0.6.7.** The chain-routing fix lands in 0.6.7; below that, testnet challenges silently sign on mainnet.
+1. **Asserts mppx ≥ 0.8.17.** Matches the worker. The chain-routing fix landed back in 0.6.7; below that, testnet challenges silently sign on mainnet.
 2. **Registers `weftly` MCP at `https://api.dev.weftly.ai/mcp`** instead of `https://api.weftly.ai/mcp`.
 3. **Smoke-tests dev** by hitting `/api/test` ($0.01 testnet PathUSD) with the working incantation (`--rpc-url https://rpc.moderato.tempo.xyz`, `--method-opt mode=push`) so you confirm the whole stack — wallet, mppx, MCP transport, dev MPP middleware — before any real-shaped paid call.
 

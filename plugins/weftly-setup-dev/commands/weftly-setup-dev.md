@@ -13,7 +13,7 @@ Flags (parsed from user input): `$ARGUMENTS`
   > `/weftly-setup-dev:weftly-setup-dev` requires a wallet name. Run:
   > `/weftly-setup-dev:weftly-setup-dev --wallet <name>`
   >
-  > Use the name of the testnet mppx wallet you want Claude to pay from. `npx --yes mppx@^0.6.7 account list` shows all wallets on this machine. The wallet must hold **testnet** PathUSD; mainnet USDC is ignored on dev.
+  > Use the name of the testnet mppx wallet you want Claude to pay from. `npx --yes mppx@^0.8.17 account list` shows all wallets on this machine. The wallet must hold **testnet** PathUSD; mainnet USDC is ignored on dev.
 
   Do not guess, do not default.
 
@@ -24,9 +24,9 @@ Throughout the steps below, substitute `<WALLET>` with the value passed to `--wa
 Run `command -v npx`.
 
 - If not found: tell the user to install Node.js, then rerun. Stop here.
-- If found: run `npx --yes mppx@^0.6.7 --version`. Require **0.6.7 or later** — earlier versions have a chain-routing bug where testnet challenges (chain 42431) get sent to mainnet (chain 4217). If older, tell the user:
+- If found: run `npx --yes mppx@^0.8.17 --version`. Require **0.8.17 or later**, matching the worker. (The historical floor was 0.6.7, below which a chain-routing bug sent testnet challenges on chain 42431 to mainnet 4217; 0.8.17 is well clear of it.) If older, tell the user:
 
-  > mppx 0.6.7 or later is required for dev/testnet. Earlier versions silently route testnet challenges to mainnet. Upgrade with:
+  > mppx 0.8.17 or later is required, to match the Weftly worker. Versions below 0.6.7 also silently route testnet challenges to mainnet. Upgrade with:
   > ```
   > npx clear-npx-cache
   > npx --yes mppx@latest --version
@@ -37,13 +37,13 @@ Run `command -v npx`.
 
 ## 2. Verify the `<WALLET>` wallet exists and is funded on testnet
 
-Run `npx --yes mppx@^0.6.7 account view --account <WALLET>`.
+Run `npx --yes mppx@^0.8.17 account view --account <WALLET>`.
 
 - If the command errors (wallet not found): stop and print:
 
   > The `<WALLET>` wallet was not found in the mppx keychain. Create one with:
   > ```
-  > npx --yes mppx@^0.6.7 account create
+  > npx --yes mppx@^0.8.17 account create
   > ```
   > Enter `<WALLET>` at the name prompt, then fund it with testnet PathUSD on Tempo Moderato (chain 42431) — the dev faucet is at https://moderato.tempo.xyz/faucet, or ask in #weftly-dev.
   >
@@ -55,20 +55,20 @@ Run `npx --yes mppx@^0.6.7 account view --account <WALLET>`.
 
 ## 3. Set `<WALLET>` as the default account
 
-Run `npx --yes mppx@^0.6.7 account default --account <WALLET>`. Surface any error.
+Run `npx --yes mppx@^0.8.17 account default --account <WALLET>`. Surface any error.
 
 ## 4. Register mppx `--mcp` with Claude Code
 
 ```bash
 claude mcp remove mppx -s user 2>/dev/null || true
-claude mcp add -s user mppx -- npx --yes mppx@^0.6.7 --mcp
+claude mcp add -s user mppx -- npx --yes mppx@^0.8.17 --mcp
 ```
 
-Verify with `claude mcp list | grep mppx` — should show `mppx` pointing at `npx --yes mppx@^0.6.7 --mcp`.
+Verify with `claude mcp list | grep mppx` — should show `mppx` pointing at `npx --yes mppx@^0.8.17 --mcp`.
 
 ## 5. Sync mppx's bundled skills
 
-Run `npx --yes mppx@^0.6.7 skills add`. This installs `mppx-sign.md` into `~/.claude/skills/` so Claude knows to call the `mppx:sign` tool on `payment_required` errors.
+Run `npx --yes mppx@^0.8.17 skills add`. This installs `mppx-sign.md` into `~/.claude/skills/` so Claude knows to call the `mppx:sign` tool on `payment_required` errors.
 
 ## 6. Register the **dev** Weftly MCP server
 
@@ -86,7 +86,7 @@ Verify with `claude mcp list | grep weftly` — should show `weftly` pointing at
 Run an MPP smoke test against the dev MPP middleware (costs **$0.01 testnet PathUSD**):
 
 ```bash
-npx --yes mppx@^0.6.7 'https://api.dev.weftly.ai/api/test' \
+npx --yes mppx@^0.8.17 'https://api.dev.weftly.ai/api/test' \
   --account <WALLET> \
   --rpc-url 'https://rpc.moderato.tempo.xyz' \
   --method-opt mode=push

@@ -11,13 +11,13 @@
       "name": "weftly-setup",
       "source": "./plugins/weftly-setup",
       "description": "One-shot setup for the Weftly MCP server and mppx wallet payments in Claude Code",
-      "version": "0.7.0"
+      "version": "0.7.2"
     },
     {
       "name": "weftly-setup-dev",
       "source": "./plugins/weftly-setup-dev",
       "description": "Dev-mode setup for Weftly MCP + mppx wallet payments. Points at api.dev.weftly.ai and Tempo Moderato testnet (chain 42431). Internal testing only.",
-      "version": "0.1.0"
+      "version": "0.1.1"
     },
     {
       "name": "weftly-editing",
